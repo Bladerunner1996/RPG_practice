@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "BaseCharacter.h"
 #include "InputActionValue.h"
 #include "CharacterTypes.h"
 #include "SlashCharacter.generated.h"
@@ -13,13 +13,12 @@ class UCameraComponent;
 class UGroomComponent;
 class AItem;
 class UAnimMontage;
-class AWeapon;
 
 class UInputMappingContext;
 class UInputAction;
 
 UCLASS()
-class RPGPRAC_API ASlashCharacter : public ACharacter
+class RPGPRAC_API ASlashCharacter : public ABaseCharacter
 {
 	GENERATED_BODY()
 
@@ -32,8 +31,7 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UFUNCTION(BlueprintCallable)
-	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
+
 
 
 protected:
@@ -61,9 +59,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* AttackAction;
 
-	UFUNCTION(BlueprintCallable)
-	void AttackEnd();
-	bool CanAttack();
+	virtual void AttackEnd() override;
+
+	virtual bool CanAttack() override;
 
 	void PlayEquipMontage(const FName& SectionName);
 	bool CanDisarm();
@@ -78,12 +76,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void FinishEquiping();
 	
-	void PlayAttackMontage();
+	virtual void PlayAttackMontage() override;
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void CameraChange(const FInputActionValue& Value);//�ı侵ͷ
-	void Attack();
+	virtual void Attack() override;
 	virtual void Jump() override;
 	void EKeyPressed();
 
@@ -108,12 +106,7 @@ private:
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlappingItem;
 
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
-	AWeapon* EquippedWeapon;
 
-	//AM
-	UPROPERTY(EditDefaultsOnly,Category = Montages)
-	UAnimMontage* AttackMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* EquipMontage;
