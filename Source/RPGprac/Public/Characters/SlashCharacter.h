@@ -28,11 +28,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-
-
 
 protected:
 
@@ -60,23 +56,20 @@ protected:
 	UInputAction* AttackAction;
 
 	virtual void AttackEnd() override;
-
 	virtual bool CanAttack() override;
-
-	void PlayEquipMontage(const FName& SectionName);
 	bool CanDisarm();
 	bool CanArm();
+	void PlayEquipMontage(const FName& SectionName);
 
 	UFUNCTION(BlueprintCallable)
-	void Disarm();
+	void AttachWeaponToBack();
 
 	UFUNCTION(BlueprintCallable)
-	void Arm();
+	void AttachWeaponToHand();
 
 	UFUNCTION(BlueprintCallable)
 	void FinishEquiping();
 	
-	virtual void PlayAttackMontage() override;
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
@@ -84,6 +77,8 @@ protected:
 	virtual void Attack() override;
 	virtual void Jump() override;
 	void EKeyPressed();
+
+	void EquipWeapon(AWeapon* Weapon);
 
 private:
 
