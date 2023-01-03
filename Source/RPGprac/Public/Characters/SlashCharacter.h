@@ -30,6 +30,8 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -70,6 +72,8 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void FinishEquiping();
 	
+	UFUNCTION(BlueprintCallable)
+	void HitReactEnd();
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
