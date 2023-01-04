@@ -33,15 +33,12 @@ protected:
 
 	/** <ABaseCharacter> */
 	virtual void Die() override;
+	void SpawnSoul();
 	virtual void Attack() override;
 	virtual bool CanAttack() override;
 	virtual void AttackEnd() override;       //敌人第一次攻击后，Notify，call这个函数
 	virtual void HandleDamage(float DamageAmount) override;
-	virtual int32 PlayDeathMontage() override;
 	/** </ABaseCharacter> */
-
-	UPROPERTY(BlueprintReadOnly)
-	TEnumAsByte<EDeathPose> DeathPose;
 
 	UPROPERTY(BlueprintReadOnly)
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
@@ -128,4 +125,7 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = Combat)
 	float DeathLifeSpan = 8.f;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	TSubclassOf<class ASoul> SoulClass;//生成soul的类型
 };

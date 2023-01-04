@@ -9,6 +9,7 @@
 #include "Components/AttributeComponent.h"
 #include "HUD/HealthBarComponent.h"
 #include "Items/Weapons/Weapon.h"
+#include "Items/Soul.h"
 
 
 AEnemy::AEnemy()
@@ -95,20 +96,36 @@ void AEnemy::BeginPlay()
 
 void AEnemy::Die()
 {
+	Super::Die();
 	EnemyState = EEnemyState::EES_Dead;
-	PlayDeathMontage();
 	ClearAttackTimer();
 	HideHealthBar();
 	DisableCapsule();
 	SetLifeSpan(DeathLifeSpan);
 	GetCharacterMovement()->bOrientRotationToMovement = false;  //·ÀÖ¹ËÀºóÊ¬ÌåÂÒ¶¯
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
+	SpawnSoul();
+}
+
+void AEnemy::SpawnSoul()
+{
+	UWorld* World = GetWorld();
+	if (World && SoulClass && Attributes)
+	{
+		ASoul* SpawnedSoul = World->SpawnActor<ASoul>(SoulClass, GetActorLocation(), GetActorRotation());
+		if (SpawnedSoul)
+		{
+			SpawnedSoul->SetSouls(Attributes->GetSouls());
+		}
+		
+	}
 }
 
 void AEnemy::Attack()
 {
-	EnemyState = EEnemyState::EES_Engaged;
 	Super::Attack();
+	if (CombatTarget == nullptr) return;
+	EnemyState = EEnemyState::EES_Engaged;
 	PlayAttackMontage();
 }
 
@@ -126,18 +143,6 @@ void AEnemy::AttackEnd()
 {
 	EnemyState = EEnemyState::EES_NoState;
 	CheckCombatTarget();
-}
-
-int32 AEnemy::PlayDeathMontage()
-{
-	const int32 Selection = Super::PlayDeathMontage();
-	TEnumAsByte<EDeathPose> Pose(Selection);
-	if (Pose < EDeathPose::EDP_MAX)
-	{
-		DeathPose = Pose;
-	}
-
-	return Selection;
 }
 
 void AEnemy::InitializeEnemy()
@@ -328,7 +333,8 @@ void AEnemy::PawnSeen(APawn* SeenPawn)
 		EnemyState != EEnemyState::EES_Dead &&
 		EnemyState != EEnemyState::EES_Chasing &&
 		EnemyState < EEnemyState::EES_Attacking&&
-		SeenPawn->ActorHasTag(FName("EngageableTarget"));
+		SeenPawn->ActorHasTag(FName("EngageableTarget"))&&
+		!SeenPawn->ActorHasTag(FName("Dead"));
 
 	if (bShouldChaseTarget)
 	{
