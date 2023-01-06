@@ -15,6 +15,8 @@ ABaseCharacter::ABaseCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+
+
 }
 
 
@@ -43,7 +45,7 @@ void ABaseCharacter::Attack()
 	}
 }
 
-void ABaseCharacter::Die()
+void ABaseCharacter::Die_Implementation()    //注意，头文件声明的是BlueprintNativeEvent, Die(), 这里给的是Die的Implementation。
 {
 	Tags.Add(FName("Dead"));
 	PlayDeathMontage();
@@ -207,6 +209,7 @@ FVector ABaseCharacter::GetRotationWarpTarget()
 void ABaseCharacter::DisableCapsule()
 {
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 }
 
 bool ABaseCharacter::CanAttack()

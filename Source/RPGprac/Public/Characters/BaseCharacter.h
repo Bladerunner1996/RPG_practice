@@ -28,7 +28,9 @@ protected:
 	/** Combat */
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
 	virtual void Attack();
-	virtual void Die();
+
+	UFUNCTION(BlueprintNativeEvent)   //这样，c++中就要实现: Die_Implementation();  并且去掉本来的Virtual Die（）； Virtual 关键字
+	void Die();
 
 	void DirectionalHitReact(const FVector& ImpactPoint);
 	virtual void HandleDamage(float DamageAmount);

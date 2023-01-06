@@ -20,6 +20,8 @@ class ASoul;
 class ATreasure;
 class UAnimMontage;
 class USlashOverlay;
+class UNiagaraComponent;
+
 
 UCLASS()
 class RPGPRAC_API ASlashCharacter : public ABaseCharacter, public IPickUpInterface
@@ -38,6 +40,7 @@ public:
 	virtual void SetOverlappingItem(AItem* Item) override;
 	virtual void AddSouls(ASoul* Soul) override;
 	virtual void AddGold(ATreasure* Treasure) override;
+	virtual void AddBlood(ABlood* Blood) override;
 
 protected:
 
@@ -67,13 +70,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* DodgeAction;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UNiagaraComponent* DashEffect;
+
 	virtual void AttackEnd() override;
 	virtual void DodgeEnd() override;
 	virtual bool CanAttack() override;
 	bool CanDisarm();
 	bool CanArm();
 	void PlayEquipMontage(const FName& SectionName);
-	virtual void Die() override;
+	virtual void Die_Implementation() override;   //虚函数重载时也要重载Implementation的版本。
 
 	bool HasEnoughStamina();
 	bool IsOccupied();
@@ -95,6 +101,7 @@ protected:
 	void CameraChange(const FInputActionValue& Value);//改变镜头
 	virtual void Attack() override;
 	virtual void Dodge();
+
 	void EKeyPressed();
 
 	void EquipWeapon(AWeapon* Weapon);

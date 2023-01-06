@@ -46,18 +46,28 @@ private:
 	float DodgeCost = 14.f;
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
+	float DashCost = 60.f;
+
+	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
 	float StaminaRegenRate = 8.f;
 
 public:
 	void ReceiveDamage(float Damage);
+
+	UFUNCTION(BlueprintCallable)
 	void UseStamina(float StaminaCost);
+	void GainStamina(float StaminaCost);
 	float GetHealthPercent();
 	float GetStaminaPercent();
 	bool IsAlive();
 	void AddSouls(int32 NumberOfSouls);
 	void AddGold(int32 AmountOfGold);
+	void AddBlood(int32 AmountOfBlood);
 	FORCEINLINE int32 GetGold() const { return Gold; }
 	FORCEINLINE int32 GetSouls() const { return Souls; }
 	FORCEINLINE float GetDodgeCost() const { return DodgeCost; }
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE float GetDashCost() const { return DashCost; }
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE float GetStamina() const { return Stamina; }
 };

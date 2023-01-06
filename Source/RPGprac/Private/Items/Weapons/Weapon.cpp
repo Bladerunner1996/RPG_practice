@@ -115,6 +115,7 @@ void AWeapon::BoxTrace(FHitResult& BoxHit)
 
 	TArray<AActor*> ActorsToIgnore;
 	ActorsToIgnore.Add(this);
+	ActorsToIgnore.Add(GetOwner()); //没有造成damage的Boxtrace，hit到了自己，这里忽略自己。
 
 	for (AActor* Actor : IgnoreActors)
 	{

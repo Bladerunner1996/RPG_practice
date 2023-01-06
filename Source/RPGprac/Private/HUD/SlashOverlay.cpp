@@ -40,3 +40,4 @@ void USlashOverlay::SetSouls(int32 Souls)
 		SoulsText->SetText(Text);
 	}
 }
+

@@ -7,6 +7,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "GroomComponent.h"
 #include "Components/AttributeComponent.h"
+#include "NiagaraComponent.h"
 #include "Items/Item.h"
 #include "Items/Weapons/Weapon.h"
 #include "Animation/AnimMontage.h"
@@ -14,6 +15,8 @@
 #include "HUD/SlashOverlay.h"
 #include "Items/Soul.h"
 #include "Items/Treasure.h"
+#include "Items/Blood.h"
+#include "Kismet/KismetSystemLibrary.h"
 //EnhancedInput
 #include "Components/InputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -37,9 +40,13 @@ ASlashCharacter::ASlashCharacter()
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
 	GetMesh()->SetGenerateOverlapEvents(true);
 
+	DashEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("DashEffect"));
+	DashEffect->SetupAttachment(GetMesh());
+	DashEffect->bAutoActivate = false;
+
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetRootComponent());
-	SpringArm->TargetArmLength = 300.f;
+	SpringArm->TargetArmLength = 350.f;
 
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
 	ViewCamera->SetupAttachment(SpringArm);
@@ -82,6 +89,15 @@ void ASlashCharacter::AddGold(ATreasure* Treasure)
 	{
 		Attributes->AddGold(Treasure->GetGold());
 		SlashOverlay->SetGold(Attributes->GetGold());
+	}
+}
+
+void ASlashCharacter::AddBlood(ABlood* Blood)
+{
+	if (Attributes && SlashOverlay)
+	{
+		Attributes->AddBlood(Blood->GetBlood());
+		SlashOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());;
 	}
 }
 
@@ -156,8 +172,12 @@ void ASlashCharacter::Attack()
 	{
 		PlayAttackMontage();
 		ActionState = EActionState::EAS_Attacking;
+		if (Attributes && SlashOverlay)
+		{
+			Attributes->GainStamina(20.f);
+			SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
+		}
 	}
-	
 }
 
 void ASlashCharacter::Dodge()
@@ -172,6 +192,7 @@ void ASlashCharacter::Dodge()
 		SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
 	}
 }
+
 
 void ASlashCharacter::AttackEnd()
 {
@@ -220,9 +241,9 @@ void ASlashCharacter::AttachWeaponToHand()
 	}
 }
 
-void ASlashCharacter::Die()
+void ASlashCharacter::Die_Implementation()
 {
-	Super::Die();
+	Super::Die_Implementation();
 
 	ActionState = EActionState::EAS_Dead;
 	DisableMeshCollision();
@@ -266,6 +287,10 @@ void ASlashCharacter::EKeyPressed()
 	AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
 	if (OverlappingWeapon)
 	{
+		if (EquippedWeapon)          //如果已经有武器了，销毁当前武器。
+		{
+			EquippedWeapon->Destroy();
+		}
 		EquipWeapon(OverlappingWeapon);
 	}
 	else

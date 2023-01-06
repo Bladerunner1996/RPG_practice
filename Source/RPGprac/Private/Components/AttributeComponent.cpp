@@ -31,6 +31,11 @@ void UAttributeComponent::UseStamina(float StaminaCost)
 	Stamina = FMath::Clamp(Stamina - StaminaCost, 0.f, MaxStamina);
 }
 
+void UAttributeComponent::GainStamina(float StaminaCost)
+{
+	Stamina = FMath::Clamp(Stamina + StaminaCost, 0.f, MaxStamina);
+}
+
 float UAttributeComponent::GetHealthPercent()
 {
 	return Health / MaxHealth;
@@ -54,6 +59,11 @@ void UAttributeComponent::AddSouls(int32 NumberOfSouls)
 void UAttributeComponent::AddGold(int32 AmountOfGold)
 {
 	Gold += AmountOfGold;
+}
+
+void UAttributeComponent::AddBlood(int32 AmountOfBlood)
+{
+	Health = FMath::Clamp(Health + AmountOfBlood, 0.f, MaxHealth);
 }
 
 void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
